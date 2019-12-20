@@ -5,6 +5,9 @@
 
 int main() {
 
+
+    using namespace matrix;
+
 	Matrix<int, -1> matrix; // бесконечная матрица int заполнена значениями -1
 	assert(matrix.size() == 0); // все ячейки свободны
 	auto a = matrix(0, 0);
