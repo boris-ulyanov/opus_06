@@ -27,11 +27,19 @@ class Slice {
     }
 
     template <typename... RestIndexes>
-    T get(key_type current_index, RestIndexes... rest_indexes) const {
+    T get(key_type index, RestIndexes... rest_indexes) const {
         static_assert(sizeof...(RestIndexes) == (deep_level - 1));
-        iter_type iter = data.find(current_index);
+        iter_type iter = data.find(index);
         if (iter == data.end()) return default_value;
         return iter->second.get(rest_indexes...);
+    }
+
+    template <typename... RestIndexes>
+    void set(T value, key_type index, RestIndexes... rest_indexes) {
+        static_assert(sizeof...(RestIndexes) == (deep_level - 1));
+
+        auto& sub_slice = data[index];
+        sub_slice.set(value, rest_indexes...);
     }
 };
 
@@ -50,6 +58,10 @@ class Slice<T, default_value, 1> {
         iter_type iter = data.find(index);
         if (iter == data.end()) return default_value;
         return iter->second;
+    }
+
+    void set(T value, key_type index) {
+        data.insert_or_assign(index, value);
     }
 };
 }

@@ -18,7 +18,6 @@ class Matrix {
     data_type data;
 
    public:
-
     std::size_t size() {
         return data.size();
     }
@@ -29,7 +28,13 @@ class Matrix {
         return data.get(indexes...);
     }
 
-    int operator()(key_type i, key_type j) {    // FixIt
+    template <typename... Indexes>
+    void set(T value, Indexes... indexes) {
+        static_assert((sizeof...(Indexes)) == dimension);
+        data.set(value, indexes...);
+    }
+
+    int operator()(key_type i, key_type j) {  // FixIt
         return 0;
     }
 };
