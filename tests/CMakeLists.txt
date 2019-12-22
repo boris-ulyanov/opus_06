@@ -14,9 +14,3 @@ target_link_libraries(test_toolbox
 )
 
 add_test(test_toolbox test_toolbox)
-
-add_test(
-    NAME "integral"
-    COMMAND sh integral.sh ${CMAKE_BINARY_DIR}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
