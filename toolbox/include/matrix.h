@@ -1,10 +1,12 @@
 /**
- * @brief is_container helper module
+ * @brief Sparce matrix module
  */
 
 #pragma once
 
 #include "slice.h"
+
+#include <array>
 
 namespace matrix {
 
@@ -17,25 +19,35 @@ class Matrix {
     using data_type = Slice<T, default_value, dimension>;
     data_type data;
 
+    struct Locator {
+        Matrix* owner;
+        std::array<key_type, dimension> indexes;
+
+        template <typename... Indexes>
+        Locator(Matrix* _matrix, Indexes... _indexes) : owner(_matrix) {
+            indexes = {static_cast<key_type>(_indexes)...};
+        }
+
+        operator T() const {
+            return owner->data.get(indexes.data());
+        }
+
+        T operator=(const T& value) {
+            owner->data.set(value, indexes.data());
+            return value;
+        }
+    };
+
    public:
     std::size_t size() {
         return data.size();
     }
 
     template <typename... Indexes>
-    const T get(Indexes... indexes) const {
+    Locator& operator()(Indexes... indexes) {
         static_assert((sizeof...(Indexes)) == dimension);
-        return data.get(indexes...);
-    }
-
-    template <typename... Indexes>
-    void set(T value, Indexes... indexes) {
-        static_assert((sizeof...(Indexes)) == dimension);
-        data.set(value, indexes...);
-    }
-
-    int operator()(key_type i, key_type j) {  // FixIt
-        return 0;
+        auto locator = new Locator{this, indexes...};
+        return *locator;
     }
 };
 }

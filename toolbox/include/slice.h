@@ -1,5 +1,5 @@
 /**
- * @brief is_container helper module
+ * @brief Sparce matrix slice module
  */
 
 #pragma once
@@ -26,20 +26,15 @@ class Slice {
         return s;
     }
 
-    template <typename... RestIndexes>
-    T get(key_type index, RestIndexes... rest_indexes) const {
-        static_assert(sizeof...(RestIndexes) == (deep_level - 1));
-        iter_type iter = data.find(index);
+    T get(const key_type* index) const {
+        iter_type iter = data.find(*index);
         if (iter == data.end()) return default_value;
-        return iter->second.get(rest_indexes...);
+        return iter->second.get(++index);
     }
 
-    template <typename... RestIndexes>
-    void set(T value, key_type index, RestIndexes... rest_indexes) {
-        static_assert(sizeof...(RestIndexes) == (deep_level - 1));
-
-        auto& sub_slice = data[index];
-        sub_slice.set(value, rest_indexes...);
+    void set(T value, const key_type* index) {
+        auto& sub_slice = data[*index];
+        sub_slice.set(value, ++index);
     }
 };
 
@@ -54,14 +49,14 @@ class Slice<T, default_value, 1> {
         return data.size();
     }
 
-    T get(key_type index) const {
-        iter_type iter = data.find(index);
+    T get(const key_type* index) const {
+        iter_type iter = data.find(*index);
         if (iter == data.end()) return default_value;
         return iter->second;
     }
 
-    void set(T value, key_type index) {
-        data.insert_or_assign(index, value);
+    void set(T value, const key_type* index) {
+        data.insert_or_assign(*index, value);
     }
 };
 }
