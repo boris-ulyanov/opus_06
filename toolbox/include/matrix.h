@@ -6,6 +6,7 @@
 
 #include "slice.h"
 
+#include <assert.h>
 #include <array>
 
 namespace matrix {
@@ -19,6 +20,7 @@ class Matrix {
     using data_type = Slice<T, default_value, dimension>;
     data_type data;
 
+    // for access over operator()
     struct Locator {
         Matrix* owner;
         std::array<key_type, dimension> indexes;
@@ -38,6 +40,36 @@ class Matrix {
         }
     };
 
+    // for access over operator[]
+    struct Locator2 {
+        Matrix* owner;
+        std::array<key_type, dimension> indexes;
+        std::size_t size;
+
+        Locator2(Matrix* _matrix, const key_type index) : owner(_matrix), size(0) {
+            indexes[0] = index;
+            ++size;
+        }
+
+        Locator2& operator[](const key_type index) {
+            assert(size < dimension);
+            indexes[size] = index;
+            ++size;
+            return *this;
+        }
+
+        operator T() const {
+            assert(size == dimension);
+            return owner->data.get(indexes.data());
+        }
+
+        T operator=(const T& value) {
+            assert(size == dimension);
+            owner->data.set(value, indexes.data());
+            return value;
+        }
+    };
+
    public:
     std::size_t size() {
         return data.size();
@@ -47,6 +79,11 @@ class Matrix {
     Locator& operator()(Indexes... indexes) {
         static_assert((sizeof...(Indexes)) == dimension);
         auto locator = new Locator{this, indexes...};
+        return *locator;
+    }
+
+    Locator2& operator[](const key_type index) {
+        auto locator = new Locator2{this, index};
         return *locator;
     }
 };
