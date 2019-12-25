@@ -35,7 +35,10 @@ class Matrix {
         }
 
         T operator=(const T& value) {
-            owner->root_slice.set(value, indexes.data());
+            if (value == default_value)
+                owner->root_slice.rm(indexes.data());
+            else
+                owner->root_slice.set(value, indexes.data());
             return value;
         }
     };
@@ -65,7 +68,10 @@ class Matrix {
 
         T operator=(const T& value) {
             assert(size == dimension);
-            owner->root_slice.set(value, indexes.data());
+            if (value == default_value)
+                owner->root_slice.rm(indexes.data());
+            else
+                owner->root_slice.set(value, indexes.data());
             return value;
         }
     };

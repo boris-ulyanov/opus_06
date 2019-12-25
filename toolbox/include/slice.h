@@ -15,19 +15,20 @@ template <typename T, T default_value, uint8_t deep_level>
 class Slice {
     using value_type = Slice<T, default_value, deep_level - 1>;
     using data_type = typename std::map<key_type, value_type>;
+    using iterator = typename data_type::iterator;
     using const_iterator = typename data_type::const_iterator;
 
     data_type data;
 
-    class iterator {
+    class Iterator {
         const_iterator current;
         typename value_type::const_iterator child;
 
        public:
-        explicit iterator(const_iterator current_)
+        explicit Iterator(const_iterator current_)
             : current(current_), child((*current_).second.begin()){};
 
-        auto operator!=(const iterator& rhs) const {
+        auto operator!=(const Iterator& rhs) const {
             return current != rhs.current;
         };
 
@@ -64,12 +65,21 @@ class Slice {
         sub_slice.set(value, ++index);
     }
 
+    void rm(const key_type* index) {
+        iterator iter = data.find(*index);
+        if (iter == data.end()) return;
+        iter->second.rm(++index);
+        if (iter->second.size() == 0) {
+            data.erase(iter);
+        }
+    }
+
     auto begin() const noexcept {
-        return *(new iterator(data.begin()));
+        return *(new Iterator(data.begin()));
     }
 
     auto end() const noexcept {
-        return *(new iterator(data.end()));
+        return *(new Iterator(data.end()));
     }
 };
 
@@ -93,6 +103,10 @@ class Slice<T, default_value, 1> {
 
     void set(T value, const key_type* index) {
         data.insert_or_assign(*index, value);
+    }
+
+    void rm(const key_type* index) {
+        data.erase(*index);
     }
 
     auto begin() const noexcept {
