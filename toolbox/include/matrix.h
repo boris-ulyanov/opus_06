@@ -17,8 +17,8 @@ class Matrix {
 
     static_assert(dimension > 0);
 
-    using data_type = Slice<T, default_value, dimension>;
-    data_type data;
+    using root_slice_type = Slice<T, default_value, dimension>;
+    root_slice_type root_slice;
 
     // for access over operator()
     struct Locator {
@@ -31,11 +31,11 @@ class Matrix {
         }
 
         operator T() const {
-            return owner->data.get(indexes.data());
+            return owner->root_slice.get(indexes.data());
         }
 
         T operator=(const T& value) {
-            owner->data.set(value, indexes.data());
+            owner->root_slice.set(value, indexes.data());
             return value;
         }
     };
@@ -60,19 +60,19 @@ class Matrix {
 
         operator T() const {
             assert(size == dimension);
-            return owner->data.get(indexes.data());
+            return owner->root_slice.get(indexes.data());
         }
 
         T operator=(const T& value) {
             assert(size == dimension);
-            owner->data.set(value, indexes.data());
+            owner->root_slice.set(value, indexes.data());
             return value;
         }
     };
 
    public:
     std::size_t size() {
-        return data.size();
+        return root_slice.size();
     }
 
     template <typename... Indexes>
@@ -85,6 +85,14 @@ class Matrix {
     Locator2& operator[](const key_type index) {
         auto locator = new Locator2{this, index};
         return *locator;
+    }
+
+    auto begin() {
+        return root_slice.begin();
+    }
+
+    auto end() {
+        return root_slice.end();
     }
 };
 }
