@@ -22,34 +22,34 @@ class Matrix {
 
     // for access over operator()
     struct Locator {
-        Matrix* owner;
+        root_slice_type& root_slice;
         std::array<key_type, dimension> indexes;
 
         template <typename... Indexes>
-        Locator(Matrix* _matrix, Indexes... _indexes) : owner(_matrix) {
+        Locator(root_slice_type& _root_slice, Indexes... _indexes) : root_slice(_root_slice) {
             indexes = {static_cast<key_type>(_indexes)...};
         }
 
         operator T() const {
-            return owner->root_slice.get(indexes.data());
+            return root_slice.get(indexes.data());
         }
 
         T operator=(const T& value) {
             if (value == default_value)
-                owner->root_slice.rm(indexes.data());
+                root_slice.rm(indexes.data());
             else
-                owner->root_slice.set(value, indexes.data());
+                root_slice.set(value, indexes.data());
             return value;
         }
     };
 
     // for access over operator[]
     struct Locator2 {
-        Matrix* owner;
+        root_slice_type& root_slice;
         std::array<key_type, dimension> indexes;
         std::size_t size;
 
-        Locator2(Matrix* _matrix, const key_type index) : owner(_matrix), size(0) {
+        Locator2(root_slice_type& _root_slice, const key_type index) : root_slice(_root_slice), size(0) {
             indexes[0] = index;
             ++size;
         }
@@ -63,15 +63,15 @@ class Matrix {
 
         operator T() const {
             assert(size == dimension);
-            return owner->root_slice.get(indexes.data());
+            return root_slice.get(indexes.data());
         }
 
         T operator=(const T& value) {
             assert(size == dimension);
             if (value == default_value)
-                owner->root_slice.rm(indexes.data());
+                root_slice.rm(indexes.data());
             else
-                owner->root_slice.set(value, indexes.data());
+                root_slice.set(value, indexes.data());
             return value;
         }
     };
@@ -84,12 +84,12 @@ class Matrix {
     template <typename... Indexes>
     Locator& operator()(Indexes... indexes) {
         static_assert((sizeof...(Indexes)) == dimension);
-        auto locator = new Locator{this, indexes...};
+        auto locator = new Locator{root_slice, indexes...};
         return *locator;
     }
 
     Locator2& operator[](const key_type index) {
-        auto locator = new Locator2{this, index};
+        auto locator = new Locator2{root_slice, index};
         return *locator;
     }
 
