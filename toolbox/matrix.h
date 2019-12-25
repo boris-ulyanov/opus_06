@@ -49,7 +49,8 @@ class Matrix {
         std::array<key_type, dimension> indexes;
         std::size_t size;
 
-        Locator2(root_slice_type& _root_slice, const key_type index) : root_slice(_root_slice), size(0) {
+        Locator2(root_slice_type& _root_slice, const key_type index)
+            : root_slice(_root_slice), size(0) {
             indexes[0] = index;
             ++size;
         }

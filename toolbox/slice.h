@@ -15,39 +15,45 @@ template <typename T, T default_value, uint8_t deep_level>
 class Slice {
     using value_type = Slice<T, default_value, deep_level - 1>;
     using data_type = typename std::map<key_type, value_type>;
-    using iterator = typename data_type::iterator;
-    using const_iterator = typename data_type::const_iterator;
+    using data_iter = typename data_type::iterator;
+    using data_const_iter = typename data_type::const_iterator;
 
     data_type data;
 
+   public:
     class Iterator {
-        const_iterator current;
-        typename value_type::const_iterator child;
+        data_const_iter current;
+        typename value_type::slice_iter child;
 
        public:
-        explicit Iterator(const_iterator current_)
+        explicit Iterator(data_const_iter current_)
             : current(current_), child((*current_).second.begin()){};
+
+        auto operator=(const Iterator& rhs) {
+            current = rhs.current;
+            child = rhs.child;
+        }
 
         auto operator!=(const Iterator& rhs) const {
             return current != rhs.current;
-        };
+        }
 
         auto& operator++() {
-            child++;
-            if (child == (*current).second.end()) {
-                current++;
-                assert((*current).second.size() > 0);  // empty nodes break everything
-                child = (*current).second.begin();     // dereference end???
-            }
+            ++child;
+            if (child != (*current).second.end()) return *this;
+            ++current;
+            child = (*current).second.begin();  // dereference end???
             return *this;
-        };
+        }
 
         auto operator*() const {
             return *current;
-        };
+        }
     };
 
    public:
+    using slice_iter = Iterator;
+
     std::size_t size() const {
         std::size_t s = 0;
         for (const auto a : data) s += a.second.size();
@@ -55,7 +61,7 @@ class Slice {
     }
 
     T get(const key_type* index) const {
-        const_iterator iter = data.find(*index);
+        data_const_iter iter = data.find(*index);
         if (iter == data.end()) return default_value;
         return iter->second.get(++index);
     }
@@ -66,7 +72,7 @@ class Slice {
     }
 
     void rm(const key_type* index) {
-        iterator iter = data.find(*index);
+        data_iter iter = data.find(*index);
         if (iter == data.end()) return;
         iter->second.rm(++index);
         if (iter->second.size() == 0) {
@@ -89,14 +95,14 @@ class Slice<T, default_value, 1> {
     data_type data;
 
    public:
-    using const_iterator = typename data_type::const_iterator;
+    using slice_iter = typename data_type::const_iterator;
 
     std::size_t size() const {
         return data.size();
     }
 
     T get(const key_type* index) const {
-        const_iterator iter = data.find(*index);
+        slice_iter iter = data.find(*index);
         if (iter == data.end()) return default_value;
         return iter->second;
     }
