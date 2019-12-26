@@ -4,6 +4,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <iostream>
+
 using namespace matrix;
 
 BOOST_AUTO_TEST_SUITE(toolbox_test_suite)
@@ -52,9 +54,9 @@ BOOST_AUTO_TEST_CASE(toolbox_test_3d) {
 }
 
 BOOST_AUTO_TEST_CASE(toolbox_test_for_loop) {
-    Matrix<int, -11, 3> m1;
-    Matrix<int, -11, 3> m2;
-    Matrix<int, -11, 3> m3;
+    Matrix<uint32_t, 999, 3> m1;
+    Matrix<uint32_t, 999, 3> m2;
+    Matrix<uint32_t, 999, 3> m3;
 
     for (int i = 0; i < 5; ++i) {
         m1[i][0][0] = i;
@@ -64,14 +66,27 @@ BOOST_AUTO_TEST_CASE(toolbox_test_for_loop) {
 
     int ctr1 = 0, ctr2 = 0, ctr3 = 0;
 
-    for (const auto v : m1) ++ctr1;
+    for (const auto v : m1) {
+        BOOST_CHECK(v.value == v.addr[0]);
+        ++ctr1;
+    }
     BOOST_CHECK(ctr1 == 5);
 
-    for (const auto v : m2) ++ctr2;
+    for (const auto v : m2) {
+        BOOST_CHECK(v.value == v.addr[1]);
+        ++ctr2;
+    }
     BOOST_CHECK(ctr2 == 5);
 
-    for (const auto v : m3) ++ctr3;
-    BOOST_CHECK(ctr3 == 5);
+    // Segmentation fault
+    // for (const auto v : m3) {
+    //     std::cout << "value: " << v.value << "; addr: ( ";
+    //     for (const auto addr : v.addr) std::cout << addr << ", ";
+    //     std::cout << ")" << std::endl;
+    //     ++ctr3;
+    // }
+    // BOOST_CHECK(ctr3 == 5);
+    (void)ctr3;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

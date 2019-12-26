@@ -37,5 +37,9 @@ int main() {
         std::cout << ")" << std::endl;
     }
 
+    // Segmentation fault >>>
+    // Matrix<uint32_t, 999, 3> m3;
+    // const auto& bbb = m3.begin();
+
     return 0;
 }
