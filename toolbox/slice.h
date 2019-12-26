@@ -49,6 +49,17 @@ class Slice {
         auto operator*() const {
             return *current;
         }
+
+        void get_addr_value(key_type* addr, T* value) const {
+            *addr = (*current).first;
+            ++addr;
+            if constexpr(deep_level > 2) {
+                child.get_addr_value(addr, value);
+            } else {
+                *addr = (*child).first;
+                *value = (*child).second;
+            }
+        }
     };
 
    public:

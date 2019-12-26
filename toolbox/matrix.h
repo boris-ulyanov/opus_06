@@ -77,6 +77,31 @@ class Matrix {
         }
     };
 
+    class Iterator {
+        using root_slice_iter = typename root_slice_type::slice_iter;
+        root_slice_iter current;
+
+       public:
+        std::array<key_type, dimension> addr;
+        T value;
+
+        explicit Iterator(root_slice_iter current_) : current(current_) {};
+
+        auto operator!=(const Iterator& rhs) const {
+            return current != rhs.current;
+        }
+
+        auto& operator++() {
+            ++current;
+            return *this;
+        }
+
+        Iterator& operator*() {
+            current.get_addr_value(addr.data(), &value);
+            return *this;
+        }
+    };
+
    public:
     std::size_t size() {
         return root_slice.size();
@@ -94,12 +119,12 @@ class Matrix {
         return *locator;
     }
 
-    auto begin() {
-        return root_slice.begin();
+    auto& begin() {
+        return *(new Iterator(root_slice.begin()));
     }
 
-    auto end() {
-        return root_slice.end();
+    auto& end() {
+        return *(new Iterator(root_slice.end()));
     }
 };
 }

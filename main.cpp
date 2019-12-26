@@ -29,10 +29,12 @@ int main() {
         std::cout << std::endl;
     }
 
-    std::cout << m.size() << std::endl;
+    std::cout << "size: " << m.size() << std::endl;
 
     for (const auto v : m) {
-        std::cout << (v).first << std::endl;
+        std::cout << "value: " << v.value << "; addr: ( ";
+        for (const auto addr : v.addr) std::cout << addr << ", ";
+        std::cout << ")" << std::endl;
     }
 
     return 0;
