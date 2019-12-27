@@ -118,7 +118,7 @@ class Slice<T, default_value, 1> {
     }
 
     void set(T value, const key_type* index) {
-        data.insert_or_assign(*index, value);
+        data[*index] = value;
     }
 
     void rm(const key_type* index) {

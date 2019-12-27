@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.8)
 
 if(DEFINED ENV{TRAVIS_BUILD_NUMBER})
     set(PROJECT_BUILD_NUMBER $ENV{TRAVIS_BUILD_NUMBER})
