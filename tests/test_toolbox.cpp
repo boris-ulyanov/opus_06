@@ -67,26 +67,22 @@ BOOST_AUTO_TEST_CASE(toolbox_test_for_loop) {
     int ctr1 = 0, ctr2 = 0, ctr3 = 0;
 
     for (const auto v : m1) {
-        BOOST_CHECK(v.value == v.addr[0]);
+        BOOST_CHECK(v.first[0] == v.second);
         ++ctr1;
     }
     BOOST_CHECK(ctr1 == 5);
 
     for (const auto v : m2) {
-        BOOST_CHECK(v.value == v.addr[1]);
+        BOOST_CHECK(v.first[1] == v.second);
         ++ctr2;
     }
     BOOST_CHECK(ctr2 == 5);
 
-    // Segmentation fault
-    // for (const auto v : m3) {
-    //     std::cout << "value: " << v.value << "; addr: ( ";
-    //     for (const auto addr : v.addr) std::cout << addr << ", ";
-    //     std::cout << ")" << std::endl;
-    //     ++ctr3;
-    // }
-    // BOOST_CHECK(ctr3 == 5);
-    (void)ctr3;
+    for (const auto v : m3) {
+        BOOST_CHECK(v.first[2] == v.second);
+        ++ctr3;
+    }
+    BOOST_CHECK(ctr3 == 5);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

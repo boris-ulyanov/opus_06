@@ -12,12 +12,12 @@ int main() {
 
     Matrix<int, default_value> m;
 
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < N; ++i) {
         m[i][i] = m[N - 1 - i][i] = i;
     }
 
-    for (int i = 0; i < 10; i += 2) {
-        for (int j = 0; j < 10; j += 2) {
+    for (int i = 0; i < N; i += 2) {
+        for (int j = 0; j < N; j += 2) {
             m[i][j] = m[i + 1][j + 1] = default_value;
         }
     }
@@ -31,15 +31,11 @@ int main() {
 
     std::cout << "size: " << m.size() << std::endl;
 
-    for (const auto v : m) {
-        std::cout << "value: " << v.value << "; addr: ( ";
-        for (const auto addr : v.addr) std::cout << addr << ", ";
-        std::cout << ")" << std::endl;
+    for (const auto& v : m) {
+        std::cout << "value: " << v.second << " addr:";
+        for (const auto& addr : v.first) std::cout << " " << addr;
+        std::cout << std::endl;
     }
-
-    // Segmentation fault >>>
-    // Matrix<uint32_t, 999, 3> m3;
-    // const auto& bbb = m3.begin();
 
     return 0;
 }
