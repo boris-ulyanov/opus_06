@@ -29,11 +29,11 @@ class Matrix {
         return iter->second;
     }
 
-    void set(const key_type& key, T value) {
+    void set(const key_type& key, const T& value) {
         if (value == default_value)
             stor.erase(key);
         else
-            stor[key] = value;
+            stor.insert_or_assign(key, value);
     }
 
     // for access over operator()
