@@ -33,7 +33,8 @@ class Matrix {
         if (value == default_value)
             stor.erase(key);
         else
-            stor.insert_or_assign(key, value);
+            // stor.insert_or_assign(key, value); // travis
+            stor[key] = value;
     }
 
     // for access over operator()
