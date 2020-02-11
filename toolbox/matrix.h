@@ -114,23 +114,21 @@ class Matrix {
     }
 
     template <typename... Indexes>
-    Locator& operator()(Indexes... indexes) {
+    Locator operator()(Indexes... indexes) {
         static_assert((sizeof...(Indexes)) == dimension);
-        auto locator = new Locator{*this, indexes...};
-        return *locator;
+        return Locator{*this, indexes...};
     }
 
-    Locator2& operator[](const idx_type index) {
-        auto locator = new Locator2{*this, index};
-        return *locator;
+    Locator2 operator[](const idx_type index) {
+        return Locator2{*this, index};
     }
 
     auto begin() {
-        return *(new iterator(stor.begin()));
+        return iterator(stor.begin());
     }
 
     auto end() {
-        return *(new iterator(stor.end()));
+        return iterator(stor.end());
     }
 };
 }
